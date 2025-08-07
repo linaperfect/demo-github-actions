@@ -1,4 +1,4 @@
-name: First Success, Second Condition False with always()
+name: First Success, Second Condition False with success()
 on:
   push:
 
@@ -12,7 +12,7 @@ jobs:
   second-job:
     runs-on: ubuntu-latest
     needs: [first-job]
-    if: ${{ always() && false }}    # 总是进入判断，但条件为 false，仍不会执行
+    if: ${{ success() && false }}    # 依赖 job 成功，但条件为 false，不会执行
     steps:
       - name: This step will not run
         run: echo "你不会看到这句话，因为条件是 false"
