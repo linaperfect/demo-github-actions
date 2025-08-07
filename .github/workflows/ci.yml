@@ -1,6 +1,6 @@
-name: Only Condition and Needs Example
+name: Simple Condition and Needs Example
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   first-job:
@@ -12,9 +12,7 @@ jobs:
   second-job:
     runs-on: ubuntu-latest
     needs: [first-job]
-    if: ${{ env.MY_CONDITION == 'run' }}    # 只在环境变量满足时运行
-    env:
-      MY_CONDITION: run                     # 这里设置环境变量
+    if: ${{ true }}    # 简单条件，始终满足
     steps:
-      - name: Run Only If Env Condition
-        run: echo "第二个 job 因为环境变量条件满足而运行"
+      - name: Run Because Condition Is True
+        run: echo "第二个 job 因为条件为 true 而运行"
