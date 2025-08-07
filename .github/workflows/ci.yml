@@ -1,4 +1,4 @@
-name: Condition Not Met Example
+name: First Fail, Second Condition False
 on:
   push:
 
@@ -6,8 +6,8 @@ jobs:
   first-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Simulate Success
-        run: echo "第一个 job 成功"   # 正常结束
+      - name: Simulate Failure
+        run: exit 1     # 故意失败
 
   second-job:
     runs-on: ubuntu-latest
