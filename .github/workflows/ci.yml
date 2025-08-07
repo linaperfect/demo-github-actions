@@ -1,18 +1,18 @@
-name: Cancelled Condition
+name: Only Condition and Needs Example
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  first-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Simulate long running job
-        run: sleep 300  # 让 job 持续运行，方便你手动取消
+      - name: Simulate Failure
+        run: exit 1     # 故意失败
 
-  after_cancelled:
+  second-job:
     runs-on: ubuntu-latest
-    needs: [build]
-    if: cancelled()   # 只有前一个 job 被取消时才运行
+    needs: [first-job]
+    if: ${{ 1 + 1 == 2 }}   # 只根据自己的条件运行，不管前一个job成败
     steps:
-      - name: Notify cancelled
-        run: echo "The previous job was cancelled!"
+      - name: Run Only If Condition True
+        run: echo "This job runs because 1+1=2"
