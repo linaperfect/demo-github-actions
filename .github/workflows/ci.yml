@@ -1,4 +1,5 @@
-name: First Success, Second Condition False with success()
+
+name: first Success, Second Condition False with success()
 on:
   push:
 
@@ -7,12 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Simulate Success
-        run: echo "第一个 job 成功"   # 正常结束
+        run: echo "第一个 job 成功"
 
   second-job:
     runs-on: ubuntu-latest
     needs: [first-job]
-    if: ${{ success() && false }}    # 依赖 job 成功，但条件为 false，不会执行
+    if: ${{ startsWith('hello', 'world') }}  && success()  # 这是一个简单表达式，总是 false
     steps:
       - name: This step will not run
-        run: echo "你不会看到这句话，因为条件是 false"
+        run: echo "你不会看到这句话，因为条件恒为 false"
