@@ -14,11 +14,12 @@ jobs:
       - name: Look
         run: ls -al
       - name: Force Fail
-        run: exit 1   # 这个命令会让该 job 失败
+        run: exit 1   # 故意失败
 
   unstash:
     runs-on: ubuntu-latest
     needs: [checkout-and-stash]
+    if: always()                # 无论前一个 job 成功还是失败都会运行
     steps:
       - name: Check
         run: ls -al
