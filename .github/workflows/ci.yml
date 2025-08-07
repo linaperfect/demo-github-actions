@@ -1,4 +1,4 @@
-name: Test Cancelled Condition
+name: Cancelled Condition
 on:
   workflow_dispatch:
 
