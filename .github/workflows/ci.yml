@@ -1,30 +1,36 @@
-name: Matrix Fail Fast Example
+name: Matrix Fail Fast Serial and Parallel Example
 on:
   push:
 
 jobs:
-  test-matrix:
+  job-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First job
+        run: echo "Job 1 (serial start)"
+
+  job-2-and-3:
+    needs: job-1
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        node-version: [16, 18]
-        os: [ubuntu-latest, windows-latest]
-    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+        job-name: [job-2, job-3]
+    name: ${{ matrix.job-name }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Print version and simulate failure on Node 18 + Windows
+      - name: ${{ matrix.job-name }}
         run: |
-          node -v
-          if [[ "${{ matrix.node-version }}" == "18" && "${{ matrix.os }}" == "windows-latest" ]]; then
-            echo "Simulating failure on Node 18 + Windows"
+          echo "${{ matrix.job-name }} (parallel)"
+          # 模拟 job-3 失败
+          if [[ "${{ matrix.job-name }}" == "job-3" ]]; then
+            echo "Simulate failure"
             exit 1
           fi
-        shell: bash
+
+  job-4:
+    needs: [job-2-and-3]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Last job
+        run: echo "Job 4 (serial end)"
