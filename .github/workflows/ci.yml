@@ -3,17 +3,33 @@ name: First Fail, Second Always with False Condition
 on:
   push:
 
-jobs:
-  first-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Simulate Failure
-        run: exit 1   # 故意失败
+matrix-job:
+  runs-on: ubuntu-latest
+  strategy:
+    fail-fast: true
+    matrix:
+      Q&: [ubuntu-latest, windows-latest]
+      java: [11, 17]
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v3
 
-  second-job:
-    runs-on: ubuntu-latest
-    needs: [first-job]
-    if: ${{false ||  failure()}}   # always() 总是判断，但条件为 false
-    steps:
-      - name: This step will not run
-        run: echo "你不会看到这句话，因为条件恒为 false"
+  - name: Set up Java
+    uses: actions/setup-java@v3
+    with:
+      java-version: ${{ matrix.java }}
+
+  - name: Display Matrix Info
+    run: {
+      echo "Running on OS: ${{ matrix.os }}"
+      echo "Using Java version: ${{ matrix.java }}"
+    }
+  - name: Simulate Failure
+    run: {
+      if [ "${{ matrix.java }}" == "11" ] && [ "${{ matrix.os }}" == "windows-latest" ]; then
+        echo "Simulating failure for Java 11 on Windows"
+        exit 1
+      fi
+    }
+  - name: Run Build
+    run: ./gradlew build
