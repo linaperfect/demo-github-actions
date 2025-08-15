@@ -1,35 +1,30 @@
-
-name: First Fail, Second Always with False Condition
+name: Matrix Fail Fast Example
 on:
   push:
 
-matrix-job:
-  runs-on: ubuntu-latest
-  strategy:
-    fail-fast: true
-    matrix:
-      Q&: [ubuntu-latest, windows-latest]
-      java: [11, 17]
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v3
+jobs:
+  test-matrix:
+    strategy:
+      fail-fast: true
+      matrix:
+        node-version: [16, 18, 20]
+        os: [ubuntu-latest, windows-latest]
+    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  - name: Set up Java
-    uses: actions/setup-java@v3
-    with:
-      java-version: ${{ matrix.java }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-  - name: Display Matrix Info
-    run: {
-      echo "Running on OS: ${{ matrix.os }}"
-      echo "Using Java version: ${{ matrix.java }}"
-    }
-  - name: Simulate Failure
-    run: {
-      if [ "${{ matrix.java }}" == "11" ] && [ "${{ matrix.os }}" == "windows-latest" ]; then
-        echo "Simulating failure for Java 11 on Windows"
-        exit 1
-      fi
-    }
-  - name: Run Build
-    run: ./gradlew build
+      - name: Print version and simulate failure on Node 18 + Windows
+        run: |
+          node -v
+          if [[ "${{ matrix.node-version }}" == "18" && "${{ matrix.os }}" == "windows-latest" ]]; then
+            echo "Simulating failure on Node 18 + Windows"
+            exit 1
+          fi
+        shell: bash
